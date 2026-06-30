@@ -401,26 +401,13 @@ a { text-decoration: none; color: inherit; }
       <div class="form-title">Оформить заказ</div>
       <div class="form-subtitle">Первый шаг к здоровому питанию — самый выгодный</div>
       <form id="form" action="#" method="post">
-        <div class="form-group">
-          <label for="product">Продукт</label>
-          <select id="product" name="product" style="width:100%;padding:14px 16px;font-size:15px;border:2px solid #e0e0e0;border-radius:10px;outline:none;font-family:inherit;background:#fff;-webkit-appearance:none;appearance:none;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>');background-repeat:no-repeat;background-position:right 14px center;cursor:pointer;">
-            <option value="Батончик «Энергия»">Батончик «Энергия» — 120 ₽</option>
-            <option value="Смузи «Зелёный заряд»">Смузи «Зелёный заряд» — 160 ₽</option>
-            <option value="Ореховый снек">Ореховый снек — 144 ₽</option>
-            <option value="Набор «Заряд» (5 шт.)">Набор «Заряд» (5 шт.) — 720 ₽</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="qty">Количество</label>
-          <div style="display:flex;gap:8px;align-items:center;">
-            <button type="button" id="qty-minus" style="width:44px;height:44px;border-radius:10px;border:2px solid #e0e0e0;background:#fff;font-size:20px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;" onmouseover="this.style.borderColor='#4CAF50'" onmouseout="this.style.borderColor='#e0e0e0'">−</button>
-            <input type="number" id="qty" name="qty" value="1" min="1" max="99" style="flex:1;text-align:center;padding:10px;font-size:17px;font-weight:600;border:2px solid #e0e0e0;border-radius:10px;outline:none;font-family:inherit;" onfocus="this.select()">
-            <button type="button" id="qty-plus" style="width:44px;height:44px;border-radius:10px;border:2px solid #e0e0e0;background:#fff;font-size:20px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;" onmouseover="this.style.borderColor='#4CAF50'" onmouseout="this.style.borderColor='#e0e0e0'">+</button>
-          </div>
+        <div style="margin-bottom:16px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#555;margin-bottom:8px;">Выберите продукты и количество</label>
+          <div id="product-list" style="display:flex;flex-direction:column;gap:8px;"></div>
         </div>
         <div style="background:#f5f5f5;border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
           <span style="font-size:14px;color:#555;">Итого:</span>
-          <span id="order-total" style="font-size:20px;font-weight:700;color:#4CAF50;">120 ₽</span>
+          <span id="order-total" style="font-size:20px;font-weight:700;color:#4CAF50;">0 ₽</span>
         </div>
         <div class="form-group">
           <label for="name">Имя *</label>
@@ -440,7 +427,7 @@ a { text-decoration: none; color: inherit; }
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         Мы перезвоним в течение 15 минут
       </div>
-      <div id="success" style="display:none;text-align:center;padding:20px 0;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg><div style="font-size:18px;font-weight:600;margin-top:12px;color:#222;">Спасибо! Ваша скидка 20% активирована.<br>Мы перезвоним в ближайшее время.</div></div>
+      <div id="success" style="display:none;text-align:center;padding:20px 0;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg><div style="font-size:18px;font-weight:600;margin-top:12px;color:#222;">Спасибо! Ваша скидка 20% активирована.</div><div style="font-size:13px;color:#666;margin-top:4px;">Заказ: <span id="order-summary"></span></div><div style="font-size:13px;color:#888;margin-top:4px;">Мы перезвоним в ближайшее время.</div></div>
     </div>
   </div>
 </section>
@@ -498,55 +485,96 @@ const observer = new IntersectionObserver(entries => {
 }, { threshold: 0.15 });
 document.querySelectorAll('.anim-up').forEach(el => observer.observe(el));
 
-// Product card click → select in form, scroll to order
-const prices = {
-  'Батончик «Энергия»': 120,
-  'Смузи «Зелёный заряд»': 160,
-  'Ореховый снек': 144,
-  'Набор «Заряд» (5 шт.)': 720
-};
+// Product list with quantities
+const products = [
+  { id: 'bar', name: 'Батончик «Энергия»', price: 120 },
+  { id: 'smoothie', name: 'Смузи «Зелёный заряд»', price: 160 },
+  { id: 'nuts', name: 'Ореховый снек', price: 144 },
+  { id: 'set', name: 'Набор «Заряд» (5 шт.)', price: 720 }
+];
 
+const list = document.getElementById('product-list');
+const qtys = {};
+
+function updateTotal() {
+  let total = 0;
+  products.forEach(p => {
+    total += (parseInt(qtys[p.id]?.value) || 0) * p.price;
+  });
+  document.getElementById('order-total').textContent = total.toLocaleString() + ' ₽';
+}
+
+function createQtyControl() {
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;align-items:center;gap:6px;';
+  const minus = document.createElement('button');
+  minus.type = 'button';
+  minus.textContent = '−';
+  minus.style.cssText = 'width:32px;height:32px;border-radius:8px;border:2px solid #e0e0e0;background:#fff;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+  const input = document.createElement('input');
+  input.type = 'number';
+  input.value = '0';
+  input.min = '0';
+  input.max = '99';
+  input.style.cssText = 'width:40px;text-align:center;padding:4px;font-size:15px;font-weight:600;border:2px solid #e0e0e0;border-radius:8px;outline:none;font-family:inherit;';
+  const plus = document.createElement('button');
+  plus.type = 'button';
+  plus.textContent = '+';
+  plus.style.cssText = 'width:32px;height:32px;border-radius:8px;border:2px solid #e0e0e0;background:#fff;font-size:16px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;';
+  
+  function update() { updateTotal(); }
+  function changeQty(delta) {
+    let v = parseInt(input.value) || 0;
+    v = Math.max(0, Math.min(99, v + delta));
+    input.value = v;
+    update();
+  }
+  minus.addEventListener('click', () => changeQty(-1));
+  plus.addEventListener('click', () => changeQty(1));
+  input.addEventListener('input', function() {
+    let v = parseInt(this.value);
+    if (isNaN(v) || v < 0) v = 0;
+    if (v > 99) v = 99;
+    this.value = v;
+    update();
+  });
+  
+  wrap.appendChild(minus);
+  wrap.appendChild(input);
+  wrap.appendChild(plus);
+  return { el: wrap, inputEl: input };
+}
+
+products.forEach(p => {
+  const row = document.createElement('div');
+  row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#fafafa;border-radius:10px;border:1px solid #f0f0f0;';
+  const name = document.createElement('span');
+  name.style.cssText = 'font-size:14px;font-weight:500;';
+  name.innerHTML = `${p.name} <span style="color:#4CAF50;font-weight:600;">${p.price} ₽</span>`;
+  const ctrl = createQtyControl();
+  qtys[p.id] = ctrl.inputEl;
+  row.appendChild(name);
+  row.appendChild(ctrl.el);
+  list.appendChild(row);
+});
+
+// Product card click → add 1 item, scroll to form
 document.querySelectorAll('.product-card').forEach(card => {
   card.addEventListener('click', function() {
     const name = this.dataset.product;
+    const found = products.find(p => p.name === name);
+    if (found) {
+      const current = parseInt(qtys[found.id].value) || 0;
+      qtys[found.id].value = current + 1;
+      updateTotal();
+    }
     document.querySelectorAll('.product-card').forEach(c => c.classList.remove('selected'));
     this.classList.add('selected');
-    document.getElementById('product').value = name;
-    updateTotal();
     setTimeout(() => {
       document.getElementById('order').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 150);
   });
 });
-
-// Quantity controls
-const qtyInput = document.getElementById('qty');
-document.getElementById('qty-minus').addEventListener('click', function() {
-  const v = parseInt(qtyInput.value) || 1;
-  if (v > 1) qtyInput.value = v - 1;
-  updateTotal();
-});
-document.getElementById('qty-plus').addEventListener('click', function() {
-  const v = parseInt(qtyInput.value) || 1;
-  if (v < 99) qtyInput.value = v + 1;
-  updateTotal();
-});
-qtyInput.addEventListener('input', function() {
-  let v = parseInt(this.value) || 1;
-  if (v < 1) v = 1;
-  if (v > 99) v = 99;
-  this.value = v;
-  updateTotal();
-});
-
-// Total
-function updateTotal() {
-  const product = document.getElementById('product').value;
-  const qty = parseInt(qtyInput.value) || 1;
-  const total = (prices[product] || 0) * qty;
-  document.getElementById('order-total').textContent = total.toLocaleString() + ' ₽';
-}
-document.getElementById('product').addEventListener('change', updateTotal);
 
 // Form submit
 document.getElementById('form').addEventListener('submit', function(e) {
@@ -558,6 +586,9 @@ document.getElementById('form').addEventListener('submit', function(e) {
   if (!name.value.trim()) { name.classList.add('input-error'); valid = false; }
   if (!phone.value.trim()) { phone.classList.add('input-error'); valid = false; }
   if (!valid) return;
+  const items = products.filter(p => (parseInt(qtys[p.id].value) || 0) > 0);
+  const summary = items.map(p => `${p.name} × ${qtys[p.id].value}`).join(', ');
+  document.getElementById('order-summary').textContent = summary || '—';
   this.style.display = 'none';
   document.getElementById('success').style.display = 'block';
 });
