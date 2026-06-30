@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GreenBite — Здоровый перекус за 30 минут</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; color: #222; background: #fff; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
+.container { max-width: 1140px; margin: 0 auto; padding: 0 20px; }
+
+/* Header */
+.header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,.95); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,.06); }
+.header .container { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+.logo { font-size: 22px; font-weight: 800; color: #4CAF50; letter-spacing: -.5px; display: flex; align-items: center; gap: 8px; }
+.logo span { color: #222; font-weight: 400; font-size: 13px; }
+.nav { display: flex; gap: 28px; }
+.nav a { font-size: 14px; font-weight: 500; color: #555; transition: color .2s; }
+.nav a:hover { color: #4CAF50; }
+.burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; padding: 4px; }
+.burger span { display: block; width: 24px; height: 2px; background: #222; border-radius: 2px; transition: .3s; }
+
+/* Animations */
+.anim-up { opacity: 0; transform: translateY(40px); transition: opacity .6s ease, transform .6s ease; }
+.anim-up.visible { opacity: 1; transform: translateY(0); }
+.anim-delay-1 { transition-delay: .1s; }
+.anim-delay-2 { transition-delay: .2s; }
+.anim-delay-3 { transition-delay: .3s; }
+.anim-delay-4 { transition-delay: .4s; }
+
+/* Hero */
+.hero { min-height: 100vh; display: flex; align-items: center; padding: 120px 0 80px; background: linear-gradient(135deg, #f8fbf8 0%, #fff 50%, #f0f7f0 100%); position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; top: -50%; right: -20%; width: 700px; height: 700px; background: radial-gradient(circle, rgba(76,175,80,.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
+.hero .container { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; position: relative; z-index: 1; }
+.hero h1 { font-size: 48px; font-weight: 800; line-height: 1.15; color: #111; margin-bottom: 16px; }
+.hero h1 .green { color: #4CAF50; }
+.hero p { font-size: 18px; color: #555; max-width: 480px; margin-bottom: 32px; }
+.hero-image { display: flex; justify-content: center; }
+.hero-image svg { width: 100%; max-width: 480px; height: auto; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 16px 36px; font-size: 16px; font-weight: 600; border: none; border-radius: 12px; cursor: pointer; transition: all .25s ease; }
+.btn-primary { background: #4CAF50; color: #fff; box-shadow: 0 4px 16px rgba(76,175,80,.35); }
+.btn-primary:hover { background: #43a047; transform: translateY(-2px); box-shadow: 0 8px 28px rgba(76,175,80,.4); }
+.btn-primary:active { transform: translateY(0); }
+.btn-outline { background: transparent; color: #4CAF50; border: 2px solid #4CAF50; }
+.btn-outline:hover { background: #4CAF50; color: #fff; }
+.btn-large { padding: 18px 44px; font-size: 18px; }
+
+/* Sections */
+.section { padding: 90px 0; }
+.section-title { font-size: 34px; font-weight: 700; text-align: center; margin-bottom: 12px; color: #111; }
+.section-sub { font-size: 16px; color: #777; text-align: center; margin-bottom: 48px; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+/* Problem */
+.problem { background: #F5F5F5; padding: 70px 0; }
+.problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.problem-card { background: #fff; border-radius: 16px; padding: 32px 24px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,.04); }
+.problem-card .icon { width: 48px; height: 48px; border-radius: 12px; background: #e8f5e9; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; }
+.problem-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+.problem-card p { font-size: 14px; color: #666; }
+
+/* Products */
+.products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.product-card { background: #fff; border-radius: 16px; padding: 20px; text-align: center; border: 1px solid #f0f0f0; transition: all .3s ease; }
+.product-card:hover { transform: translateY(-6px); box-shadow: 0 12px 32px rgba(0,0,0,.08); border-color: #e0e0e0; }
+.product-card .img-wrap { width: 100%; aspect-ratio: 1; border-radius: 12px; background: #f9f9f9; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; overflow: hidden; }
+.product-card .price { font-size: 20px; font-weight: 700; color: #4CAF50; margin: 8px 0 4px; }
+.product-card h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+.product-card p { font-size: 13px; color: #888; }
+
+/* Why */
+.why { background: #F5F5F5; }
+.why-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.why-card { background: #fff; border-radius: 16px; padding: 36px 24px; text-align: center; transition: all .3s ease; }
+.why-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.why-icon { width: 56px; height: 56px; border-radius: 14px; background: #e8f5e9; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.why-card h3 { font-size: 18px; font-weight:600; margin-bottom: 8px; }
+.why-card p { font-size: 14px; color: #666; }
+
+/* Reviews */
+.reviews-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.review-card { background: #fff; border-radius: 16px; padding: 28px 24px; border: 1px solid #f0f0f0; transition: all .3s ease; }
+.review-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+.review-avatar { width: 48px; height: 48px; border-radius: 50%; background: #e8f5e9; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #4CAF50; margin-bottom: 12px; }
+.review-card .stars { color: #f5b342; font-size: 14px; margin-bottom: 8px; letter-spacing: 2px; }
+.review-card p { font-size: 14px; color: #444; line-height: 1.6; margin-bottom: 12px; }
+.review-card .name { font-size: 14px; font-weight: 600; color: #222; }
+.review-card .role { font-size: 12px; color: #999; }
+
+/* Form */
+.form-section { background: linear-gradient(135deg, #4CAF50 0%, #388e3c 100%); padding: 90px 0; }
+.form-section .section-title { color: #fff; }
+.form-section .section-sub { color: rgba(255,255,255,.8); }
+.form-card { max-width: 540px; margin: 0 auto; background: #fff; border-radius: 20px; padding: 44px 40px; box-shadow: 0 16px 48px rgba(0,0,0,.15); }
+.form-card .form-title { font-size: 22px; font-weight: 700; text-align: center; margin-bottom: 24px; color: #111; }
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; color: #555; margin-bottom: 4px; }
+.form-group input { width: 100%; padding: 14px 16px; font-size: 15px; border: 2px solid #e0e0e0; border-radius: 10px; outline: none; transition: border-color .2s; font-family: inherit; }
+.form-group input:focus { border-color: #4CAF50; }
+.form-group input.input-error { border-color: #e53935; }
+.form-card .btn { width: 100%; padding: 16px; font-size: 17px; margin-top: 8px; }
+.form-guarantee { text-align: center; font-size: 13px; color: #888; margin-top: 16px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.form-guarantee svg { flex-shrink: 0; }
+
+/* Footer */
+.footer { background: #111; color: rgba(255,255,255,.7); padding: 48px 0; }
+.footer .container { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px; }
+.footer h4 { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 12px; }
+.footer p, .footer a { font-size: 14px; line-height: 2; display: block; }
+.footer a:hover { color: #4CAF50; }
+.footer .logo { margin-bottom: 8px; }
+.footer-bottom { border-top: 1px solid rgba(255,255,255,.08); margin-top: 32px; padding-top: 20px; text-align: center; font-size: 13px; }
+.social-links { display: flex; gap: 12px; margin-top: 8px; }
+.social-links a { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.08); display: flex; align-items: center; justify-content: center; transition: background .2s; }
+.social-links a:hover { background: #4CAF50; }
+
+/* Micro CTA */
+.micro-cta { text-align: center; margin-top: 40px; }
+.micro-cta a { color: #4CAF50; font-weight: 600; font-size: 15px; display: inline-flex; align-items: center; gap: 6px; transition: gap .2s; }
+.micro-cta a:hover { gap: 10px; }
+
+/* Mobile */
+@media (max-width: 768px) {
+  .header .container { height: 56px; }
+  .burger { display: flex; }
+  .nav { display: none; position: absolute; top: 56px; left: 0; right: 0; background: #fff; flex-direction: column; padding: 16px 20px; gap: 16px; border-bottom: 1px solid #eee; }
+  .nav.open { display: flex; }
+  .hero { padding: 100px 0 60px; }
+  .hero .container { grid-template-columns: 1fr; gap: 32px; text-align: center; }
+  .hero h1 { font-size: 32px; }
+  .hero p { margin-left: auto; margin-right: auto; }
+  .hero-image { display: none; }
+  .section { padding: 56px 0; }
+  .section-title { font-size: 26px; }
+  .problem-grid { grid-template-columns: 1fr; }
+  .products-grid { grid-template-columns: repeat(2, 1fr); }
+  .why-grid { grid-template-columns: 1fr; }
+  .reviews-grid { grid-template-columns: 1fr; }
+  .form-card { padding: 28px 20px; }
+  .footer .container { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 480px) {
+  .products-grid { grid-template-columns: 1fr; }
+  .footer .container { grid-template-columns: 1fr; }
+  .btn-large { padding: 16px 28px; font-size: 16px; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="container">
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#4CAF50"/><path d="M8 14l4 4 8-8" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      GreenBite
+    </div>
+    <nav class="nav" id="nav">
+      <a href="#products">Продукты</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#contacts">Контакты</a>
+    </nav>
+    <button class="burger" id="burger" aria-label="Меню">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div>
+      <h1>Перекусил — и забыл <span class="green">о голоде на 4 часа</span></h1>
+      <p>Здоровый перекус за 30 минут — без готовки и ожидания. Вкусно. Полезно. Доступно.</p>
+      <a href="#order" class="btn btn-primary btn-large">Заказать пробный набор</a>
+    </div>
+    <div class="hero-image">
+      <svg viewBox="0 0 480 400" fill="none">
+        <circle cx="240" cy="200" r="160" fill="#e8f5e9"/>
+        <rect x="140" y="120" width="80" height="80" rx="16" fill="#fff" stroke="#4CAF50" stroke-width="2"/>
+        <rect x="150" y="130" width="20" height="20" rx="4" fill="#c8e6c9"/>
+        <rect x="180" y="130" width="20" height="20" rx="4" fill="#a5d6a7"/>
+        <rect x="150" y="160" width="50" height="20" rx="4" fill="#81c784"/>
+        <rect x="260" y="120" width="80" height="80" rx="16" fill="#fff" stroke="#4CAF50" stroke-width="2"/>
+        <rect x="270" y="130" width="40" height="40" rx="6" fill="#c8e6c9"/>
+        <rect x="320" y="130" width="10" height="40" rx="4" fill="#a5d6a7"/>
+        <rect x="200" y="240" width="80" height="80" rx="16" fill="#fff" stroke="#4CAF50" stroke-width="2"/>
+        <circle cx="240" cy="280" r="16" fill="#c8e6c9"/>
+        <circle cx="225" cy="275" r="8" fill="#a5d6a7"/>
+        <circle cx="255" cy="275" r="8" fill="#81c784"/>
+        <path d="M160 340c60-40 100-40 160 0" stroke="#4CAF50" stroke-width="2" stroke-dasharray="6 4" opacity=".4"/>
+        <text x="240" y="380" text-anchor="middle" fill="#4CAF50" font-size="13" font-weight="600">30 мин</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="problem">
+  <div class="container">
+    <h2 class="section-title">Времени на готовку нет, а питаться хочется правильно</h2>
+    <p class="section-sub">Ты слишком занят, чтобы часами стоять у плиты. А фастфуд и бутерброды давно надоели.</p>
+    <div class="problem-grid">
+      <div class="problem-card anim-up">
+        <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <h3>Нет времени</h3>
+        <p>Работа, спортзал, встречи — на готовку совсем не остаётся сил.</p>
+      </div>
+      <div class="problem-card anim-up anim-delay-1">
+        <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg></div>
+        <h3>Сложный выбор</h3>
+        <p>Полезные перекусы либо безвкусные, либо дорогие. Хочется и то, и другое.</p>
+      </div>
+      <div class="problem-card anim-up anim-delay-2">
+        <div class="icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Риск сорваться</h3>
+        <p>Без правильного перекуса под рукой проще купить вредное, чем полезное.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="products">
+  <div class="container">
+    <h2 class="section-title">Наши продукты</h2>
+    <p class="section-sub">Натуральные снеки, которые можно брать с собой куда угодно</p>
+    <div class="products-grid">
+      <div class="product-card anim-up">
+        <div class="img-wrap"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><rect x="10" y="20" width="60" height="40" rx="8" fill="#c8e6c9"/><rect x="20" y="28" width="40" height="8" rx="4" fill="#81c784"/><rect x="20" y="40" width="30" height="6" rx="3" fill="#a5d6a7"/><rect x="20" y="50" width="24" height="5" rx="2.5" fill="#66bb6a"/></svg></div>
+        <h3>Батончик «Энергия»</h3>
+        <p class="price">150 ₽</p>
+        <p>Овёс, мёд, орехи — сытный заряд на весь день</p>
+      </div>
+      <div class="product-card anim-up anim-delay-1">
+        <div class="img-wrap"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><rect x="15" y="15" width="50" height="55" rx="12" fill="#c8e6c9"/><rect x="22" y="22" width="36" height="36" rx="18" fill="#a5d6a7"/><circle cx="40" cy="40" r="12" fill="#81c784"/><circle cx="35" cy="36" r="4" fill="#66bb6a"/><circle cx="45" cy="44" r="3" fill="#4caf50"/></svg></div>
+        <h3>Смузи «Зелёный заряд»</h3>
+        <p class="price">200 ₽</p>
+        <p>Шпинат, яблоко, имбирь — витамины в каждом глотке</p>
+      </div>
+      <div class="product-card anim-up anim-delay-2">
+        <div class="img-wrap"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><circle cx="40" cy="40" r="25" fill="#c8e6c9"/><circle cx="30" cy="35" r="7" fill="#a5d6a7"/><circle cx="48" cy="32" r="6" fill="#81c784"/><circle cx="38" cy="48" r="5" fill="#66bb6a"/><circle cx="50" cy="46" r="4" fill="#4caf50"/></svg></div>
+        <h3>Ореховый снек</h3>
+        <p class="price">180 ₽</p>
+        <p>Миндаль, кешью, клюква — идеальный crunch</p>
+      </div>
+      <div class="product-card anim-up anim-delay-3">
+        <div class="img-wrap"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><rect x="8" y="12" width="64" height="56" rx="10" fill="#c8e6c9"/><rect x="16" y="20" width="48" height="40" rx="6" fill="#a5d6a7"/><rect x="22" y="26" width="12" height="12" rx="4" fill="#81c784"/><rect x="40" y="26" width="12" height="12" rx="4" fill="#66bb6a"/><rect x="22" y="42" width="30" height="6" rx="3" fill="#4caf50"/></svg></div>
+        <h3>Набор «Заряд» (5 шт.)</h3>
+        <p class="price">900 ₽</p>
+        <p>Пять разных снеков — на неделю здоровых перекусов</p>
+      </div>
+    </div>
+    <div class="micro-cta">
+      <a href="#order">Выберите свой набор →</a>
+    </div>
+  </div>
+</section>
+
+<section class="why">
+  <div class="container section">
+    <h2 class="section-title">Почему выбирают GreenBite</h2>
+    <p class="section-sub">Мы сделали здоровое питание простым и доступным</p>
+    <div class="why-grid">
+      <div class="why-card anim-up">
+        <div class="why-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>100% натурально</h3>
+        <p>Никакого сахара, консервантов и химии — только то, что дала природа.</p>
+      </div>
+      <div class="why-card anim-up anim-delay-1">
+        <div class="why-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+        <h3>Доставка за 30 мин</h3>
+        <p>Быстрее, чем пицца. Заказал — через полчаса уже перекусываешь.</p>
+      </div>
+      <div class="why-card anim-up anim-delay-2">
+        <div class="why-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+        <h3>Действительно вкусно</h3>
+        <p>Доказано сотнями отзывов. Полезное не обязано быть безвкусным.</p>
+      </div>
+    </div>
+    <div class="micro-cta">
+      <a href="#order">Узнайте больше →</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="reviews">
+  <div class="container">
+    <h2 class="section-title">Кто уже попробовал</h2>
+    <p class="section-sub">Реальные отзывы тех, кто перешёл на здоровый перекус</p>
+    <div class="reviews-grid">
+      <div class="review-card anim-up">
+        <div class="review-avatar">А</div>
+        <div class="stars">★★★★★</div>
+        <p>«Работаю в офисе с 9 до 7. Раньше перехватывала печенье и бутерброды, а теперь ношу с собой батончики GreenBite. Сил стало больше, и живот не болит. Удобно, что можно заказать сразу набор на неделю.»</p>
+        <div class="name">Анна, 29 лет</div>
+        <div class="role">Менеджер проектов</div>
+      </div>
+      <div class="review-card anim-up anim-delay-1">
+        <div class="review-avatar">Д</div>
+        <div class="stars">★★★★★</div>
+        <p>«Тренируюсь 4 раза в неделю, всегда ищу правильный перекус после зала. Смузи «Зелёный заряд» — просто бомба! Свежий, не приторный, реально насыщает. И доставка приезжает быстрее, чем я до дома доезжаю.»</p>
+        <div class="name">Дмитрий, 34 года</div>
+        <div class="role">Фитнес-тренер</div>
+      </div>
+      <div class="review-card anim-up anim-delay-2">
+        <div class="review-avatar">Е</div>
+        <div class="stars">★★★★★</div>
+        <p>«У меня двое детей и свой бизнес — на готовку вообще нет времени. Заказала пробный набор GreenBite ради интереса. Теперь муж и дети просят «те вкусные штуки» постоянно. Особенно ореховый снек — уходит первым!»</p>
+        <div class="name">Елена, 38 лет</div>
+        <div class="role">Предприниматель</div>
+      </div>
+    </div>
+    <div class="micro-cta">
+      <a href="#order">Присоединиться к ним →</a>
+    </div>
+  </div>
+</section>
+
+<section class="form-section" id="order">
+  <div class="container">
+    <h2 class="section-title">Попробуйте здоровое питание уже сегодня</h2>
+    <p class="section-sub">Оставьте заявку — мы подберём набор под ваш вкус и привезём за 30 минут</p>
+    <div class="form-card anim-up">
+      <div class="form-title">Закажите пробный набор</div>
+      <form id="form" action="#" method="post">
+        <div class="form-group">
+          <label for="name">Имя *</label>
+          <input type="text" id="name" name="name" placeholder="Как к вам обращаться?" required>
+        </div>
+        <div class="form-group">
+          <label for="phone">Телефон *</label>
+          <input type="tel" id="phone" name="phone" placeholder="+7 (999) 123-45-67" required>
+        </div>
+        <div class="form-group">
+          <label for="email">Email (необязательно)</label>
+          <input type="email" id="email" name="email" placeholder="example@mail.ru">
+        </div>
+        <button type="submit" class="btn btn-primary">Заказать пробный набор</button>
+      </form>
+      <div class="form-guarantee">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        Мы перезвоним в течение 15 минут
+      </div>
+      <div id="success" style="display:none;text-align:center;padding:20px 0;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#4CAF50" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg><div style="font-size:18px;font-weight:600;margin-top:12px;color:#222;">Спасибо! Мы свяжемся с вами в ближайшее время.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer" id="contacts">
+  <div class="container">
+    <div>
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#4CAF50"/><path d="M8 14l4 4 8-8" stroke="#fff" stroke-width="2.5"/></svg>
+        GreenBite
+      </div>
+      <p style="margin-top:8px;font-size:13px;color:rgba(255,255,255,.5);">Вкусно. Полезно. Доступно.</p>
+    </div>
+    <div>
+      <h4>Контакты</h4>
+      <a href="tel:+79991234567">+7 999 123 45 67</a>
+      <a href="mailto:info@greenbite.ru">info@greenbite.ru</a>
+    </div>
+    <div>
+      <h4>Мы в соцсетях</h4>
+      <div class="social-links">
+        <a href="https://instagram.com/greenbite" target="_blank" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="#fff"/></svg></a>
+        <a href="https://t.me/greenbite" target="_blank" aria-label="Telegram"><svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0a12 12 0 00-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 01.171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h4>Информация</h4>
+      <a href="#products">Продукты</a>
+      <a href="#reviews">Отзывы</a>
+      <a href="#order">Заказать</a>
+    </div>
+  </div>
+  <div class="footer-bottom container">
+    © 2025 GreenBite. Все права защищены.
+  </div>
+</footer>
+
+<script>
+// Burger menu
+document.getElementById('burger').addEventListener('click', function() {
+  document.getElementById('nav').classList.toggle('open');
+});
+document.querySelectorAll('.nav a').forEach(a => {
+  a.addEventListener('click', () => document.getElementById('nav').classList.remove('open'));
+});
+
+// Scroll animations
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.anim-up').forEach(el => observer.observe(el));
+
+// Form
+document.getElementById('form').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const name = document.getElementById('name');
+  const phone = document.getElementById('phone');
+  let valid = true;
+  [name, phone].forEach(f => f.classList.remove('input-error'));
+  if (!name.value.trim()) { name.classList.add('input-error'); valid = false; }
+  if (!phone.value.trim()) { phone.classList.add('input-error'); valid = false; }
+  if (!valid) return;
+  this.style.display = 'none';
+  document.getElementById('success').style.display = 'block';
+});
+</script>
+</body>
+</html>
